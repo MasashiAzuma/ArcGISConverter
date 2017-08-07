@@ -40,6 +40,8 @@ public class Json {
 
 		return convergeJson(singularJson);
 	}
+	
+	
 
 	public ArrayList<JSONObject> convergeJson(ArrayList<JSONObject> data) {
 		// first get the keys from properties
@@ -55,7 +57,7 @@ public class Json {
 
 			ArrayList<JSONObject> matched = new ArrayList<JSONObject>();
 			ArrayList<Object> propKey = new ArrayList<Object>();
-			JSONObject temp = (JSONObject) data.get(0).get("matching properties");
+			JSONObject temp = (JSONObject) data.get(0).get("properties");
 
 			// add in implementation for different stuff
 			for (Object o : temp.values()) {
@@ -65,7 +67,7 @@ public class Json {
 			// matched.add(data.get(0));
 
 			for (int i = data.size() - 1; i >= 0; i--) {
-				JSONObject prop = (JSONObject) data.get(i).get("matching properties");
+				JSONObject prop = (JSONObject) data.get(i).get("properties");
 				for (int j = 0; j < propKey.size(); j++) {
 
 					if (prop.containsValue(propKey.get(j))) {
@@ -158,7 +160,7 @@ public class Json {
 		JSONObject combinedProp = new JSONObject();
 
 		for (int i = 0; i < matched.size(); i++) {
-			JSONObject property = (JSONObject) matched.get(i).get("matching properties");
+			JSONObject property = (JSONObject) matched.get(i).get("properties");
 			Object[] propKey = property.keySet().toArray();
 			for (int j = 0; j < propKey.length; j++) {
 				combinedProp.put(propKey[j], property.get(propKey[j]));
@@ -168,43 +170,44 @@ public class Json {
 		// combine the data fields
 
 		// the combined data fields needs to make sure it works for multiple datasets
-		JSONObject combinedData = new JSONObject();
-
-		ArrayList<Object> uniqueDataKey = new ArrayList<Object>();
-		ArrayList<JSONArray> dataSetArray = new ArrayList<JSONArray>();
-
-		for (int i = 0; i < matched.size(); i++) {
-			JSONObject data = (JSONObject) matched.get(i).get("data");
-			Object[] dataKey = data.keySet().toArray();
-			for (int j = 0; j < dataKey.length; j++) {
-				if (!uniqueDataKey.contains(dataKey[j])) {
-					uniqueDataKey.add(dataKey[j]);
-					dataSetArray.add(new JSONArray());
-				}
-				if (data.get(dataKey[j]) instanceof JSONObject) {
-					if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(data.get(dataKey[j])))
-						dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(data.get(dataKey[j]));
-				} else if (data.get(dataKey[j]) instanceof JSONArray) {
-					JSONArray temp = (JSONArray) data.get(dataKey[j]);
-					for (int k = 0; k < temp.size(); k++) {
-						if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(temp.get(k))) {
-							dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(temp.get(k));
-						}
-					}
-				}
-
-			}
-		}
-
-		for (int i = 0; i < dataSetArray.size(); i++) {
-			combinedData.put(uniqueDataKey.get(i), dataSetArray.get(i));
-		}
+//		JSONObject combinedData = new JSONObject();
+//
+//		ArrayList<Object> uniqueDataKey = new ArrayList<Object>();
+//		ArrayList<JSONArray> dataSetArray = new ArrayList<JSONArray>();
+//
+//		for (int i = 0; i < matched.size(); i++) {
+//			JSONObject data = (JSONObject) matched.get(i).get("data");
+//			Object[] dataKey = data.keySet().toArray();
+//			for (int j = 0; j < dataKey.length; j++) {
+//				if (!uniqueDataKey.contains(dataKey[j])) {
+//					uniqueDataKey.add(dataKey[j]);
+//					dataSetArray.add(new JSONArray());
+//				}
+//				if (data.get(dataKey[j]) instanceof JSONObject) {
+//					if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(data.get(dataKey[j])))
+//						dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(data.get(dataKey[j]));
+//				} else if (data.get(dataKey[j]) instanceof JSONArray) {
+//					JSONArray temp = (JSONArray) data.get(dataKey[j]);
+//					for (int k = 0; k < temp.size(); k++) {
+//						if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(temp.get(k))) {
+//							dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(temp.get(k));
+//						}
+//					}
+//				}
+//
+//			}
+//		}
+//
+//		for (int i = 0; i < dataSetArray.size(); i++) {
+//			combinedData.put(uniqueDataKey.get(i), dataSetArray.get(i));
+//		}
+		
 
 		JSONObject consolidatedJSON = new JSONObject();
 		consolidatedJSON.put("geometry", combinedGeo);
-		consolidatedJSON.put("data", combinedData);
+		//consolidatedJSON.put("data", combinedData);
 		consolidatedJSON.put("properties", combinedProp);
-		consolidatedJSON.put("matching properties", (JSONObject) matched.get(0).get("matching properties"));
+		//consolidatedJSON.put("matching properties", (JSONObject) matched.get(0).get("matching properties"));
 		consolidatedJSON.put("type", "Feature");
 
 		// have to check the keys that match and then append the data

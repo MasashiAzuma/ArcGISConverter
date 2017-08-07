@@ -103,6 +103,9 @@ public class Handler {
 	}
 
 	public void getJson() throws IOException {
+	
+		
+		
 		Json[] jsonCreator = new Json[fc.getNumFiles()];
 		ArrayList<ArrayList<String[]>> DATA = fc.getAllData();
 		ArrayList<JSONObject> directoryConverge = new ArrayList<JSONObject>();
@@ -121,9 +124,12 @@ public class Handler {
 		
 		Json finalJSON = new Json();
 		ArrayList<JSONObject> finalArray = finalJSON.convergeJson(directoryConverge);
-		System.out.println(finalArray.size());
+		//final array is the template
 		missingGeometry(finalArray);
-		pack(finalArray);
+		Builder builder = new Builder(finalArray, fc.getAllData());
+		builder.cycle();
+		
+		//pack(finalArray);
 		
 	}
 	
@@ -137,15 +143,16 @@ public class Handler {
 		endProduct.put("features", features);
 		endProduct.put("name", fc.getDirectoryName());
 		
-		
-		try (FileWriter file = new FileWriter("/Users/azum288/Desktop/Locations/file1.json")) {
-			file.write(endProduct.toJSONString());
-			System.out.println("Successfully Copied JSON Object to File...");
-			System.out.println("\nJSON Object: " + endProduct);
-		}
-		
-		
 		System.out.println(endProduct);
+		
+//		try (FileWriter file = new FileWriter("/Users/azum288/Desktop/Locations/file1.json")) {
+//			file.write(endProduct.toJSONString());
+//			System.out.println("Successfully Copied JSON Object to File...");
+//			System.out.println("\nJSON Object: " + endProduct);
+//		}
+		
+		
+		
 	
 	}
 	

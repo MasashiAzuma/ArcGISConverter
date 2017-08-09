@@ -146,20 +146,8 @@ public class Properties extends JPanel implements JsonGUI{
 				propCollection.put(keys[j], pkey.get(keys[j]));
 			}
 		}
-		
-		JSONObject matchingCollection = new JSONObject();
-		
-		for(int i = 0; i < panel.getComponentCount(); i++){
-			JsonProp g = (JsonProp) panel.getComponent(i);
-			JSONObject pkey = (JSONObject) g.pullMatching(allData, row);
-			Object[] keys = pkey.keySet().toArray();
-			for (int j = 0; j < keys.length; j++) {
-				matchingCollection.put(keys[j], pkey.get(keys[j]));
-			}
-		}
 		JSONObject properties = new JSONObject();
 		properties.put("properties", propCollection);
-		properties.put("matching properties", matchingCollection);
 		
 		return properties;
 	}

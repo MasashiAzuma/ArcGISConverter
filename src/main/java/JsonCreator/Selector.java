@@ -8,13 +8,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import org.geotools.swing.data.JFileDataStoreChooser;
 
-import GUI.Data;
 import GUI.Geometry;
 import GUI.JsonGUI;
 import GUI.Properties;
@@ -23,11 +23,14 @@ import java.awt.event.ItemEvent;
 
 public class Selector extends JFrame {
 	public static JTextArea log;
+	public static long startTime;
+	public static long lapTime;
 	
 	private JPanel contentPane;
 	private String[] headers;
 	private ArrayList<String[]> allData;
 	private ArrayList<JsonGUI> allUI;
+	
 
 	/**
 	 * Launch the application.
@@ -44,6 +47,11 @@ public class Selector extends JFrame {
 				}
 			}
 		});
+	}
+	
+	public static void displayTime(String thing) {
+		Selector.lapTime = System.nanoTime();
+		System.out.println((lapTime - startTime)/1000000000 + " sec: " + thing);
 	}
 
 	public Selector() {
@@ -160,12 +168,9 @@ public class Selector extends JFrame {
 		});
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
-			try {
-				hd.getJson();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+				//new Thread(()->MyProgressBar.gen(this)).start();
+				new Thread(()->hd.getJson()).start();
+				//MyProgessBar.get().update(updateContext);
 		});
 		
 		comboBox.addItemListener((ItemEvent e) -> {
@@ -176,3 +181,31 @@ public class Selector extends JFrame {
 
 	}
 }
+//class MyProgressBar extends JDialog{
+//	private static final long serialVersionUID = 1L;
+//	private static Optional<MyProgressBar> mpb = Optional.empty();
+//	public static void gen(JFrame jf) {
+//		if(!mpb.isPresent()) {
+//			mpb=Optional.of(new MyProgressBar(jf));						
+//		}					
+//	}
+//	MyProgressBar(JFrame jf){
+//		super(jf, true);
+//		make();
+//	}
+//	private void make() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//	public void update(UpdateContext ux) {
+//		//update code
+//		if(ux.isKill) {
+//			end();
+//		}
+//	}
+//	private void end() {
+//		mpb=Optional.empty();
+//		this.dispose();
+//	}
+//	
+//}

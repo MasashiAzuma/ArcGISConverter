@@ -16,7 +16,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
-public class PropertyKey extends JPanel implements JsonGUI, JsonProp {
+public class PropertyKey extends JPanel implements JsonGUI{
 	private JComboBox<String> propertyKey;
 	private JComboBox<String> propertyType;
 
@@ -31,20 +31,12 @@ public class PropertyKey extends JPanel implements JsonGUI, JsonProp {
 
 		propertyKey = new JComboBox<String>();
 		GridBagConstraints gbc_propertyKey = new GridBagConstraints();
+		gbc_propertyKey.gridwidth = 2;
 		gbc_propertyKey.insets = new Insets(0, 0, 0, 5);
 		gbc_propertyKey.fill = GridBagConstraints.HORIZONTAL;
 		gbc_propertyKey.gridx = 0;
 		gbc_propertyKey.gridy = 0;
 		add(propertyKey, gbc_propertyKey);
-
-		String[] m = new String[] { "Matching ID", "Not Matching ID" };
-		propertyType = new JComboBox(m);
-		GridBagConstraints gbc_propertyType = new GridBagConstraints();
-		gbc_propertyType.insets = new Insets(0, 0, 0, 5);
-		gbc_propertyType.fill = GridBagConstraints.HORIZONTAL;
-		gbc_propertyType.gridx = 1;
-		gbc_propertyType.gridy = 0;
-		add(propertyType, gbc_propertyType);
 
 		JButton btnDelete = new JButton("Delete");
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
@@ -82,28 +74,16 @@ public class PropertyKey extends JPanel implements JsonGUI, JsonProp {
 	@Override
 	public JSONObject pullJson(ArrayList<String[]> allData, int row) {
 		JSONObject prop = new JSONObject();
-
+		
+		//System.out.println(row);
+		//System.out.println(allData.get(row).length + "row length");
+		
 		for (int i = 0; i < allData.get(row).length; i++) {
-			if (propertyKey.getSelectedItem().equals(allData.get(0)[i])) {
-				prop.put(propertyKey.getSelectedItem().toString(), allData.get(row)[i]);
+			//System.out.println(i);
+			if ((allData.get(0).length>i)&&propertyKey.getSelectedItem().equals(allData.get(0)[i])) {
+				prop.put(propertyKey.getSelectedItem(), allData.get(row)[i]);
 			}
 		}
-
-		return prop;
-	}
-
-	@Override
-	public JSONObject pullMatching(ArrayList<String[]> allData, int row) {
-		JSONObject prop = new JSONObject();
-
-		for (int i = 0; i < allData.get(row).length; i++) {
-			if (propertyKey.getSelectedItem().equals(allData.get(0)[i])) {
-				if (propertyType.getSelectedItem().equals("Matching ID")) {
-					prop.put(propertyKey.getSelectedItem().toString(), allData.get(row)[i]);
-				}
-			}
-		}
-
 		return prop;
 	}
 }

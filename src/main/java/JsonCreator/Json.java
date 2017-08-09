@@ -11,17 +11,6 @@ import GUI.JsonGUI;
 
 //handles the JSON conversion using json.simple
 public class Json {
-	// private ArrayList<String[]> allData;
-	// private ArrayList<JSONObject> compiled;
-
-	public Json() {
-		// this.allData = allData;
-
-	}
-
-	public void reset() {
-		// allData = new ArrayList<String[]>();
-	}
 
 	public ArrayList<JSONObject> getJson(JsonGUI[] allGUI, ArrayList<String[]> allData) {
 		ArrayList<JSONObject> singularJson = new ArrayList<JSONObject>();
@@ -37,19 +26,16 @@ public class Json {
 
 			}
 		}
-
 		return convergeJson(singularJson);
 	}
-	
-	
 
 	public ArrayList<JSONObject> convergeJson(ArrayList<JSONObject> data) {
 		// first get the keys from properties
 		// then compare their names
-
-		ArrayList<JSONObject> finalized = new ArrayList<JSONObject>();
 		
-		if(data.size()==1) {
+		ArrayList<JSONObject> finalized = new ArrayList<JSONObject>();
+
+		if (data.size() == 1) {
 			return data;
 		}
 
@@ -79,20 +65,15 @@ public class Json {
 					}
 				}
 			}
-
 			finalized.add(combine(matched));
-
 			if (data.size() == 1) {
 				finalized.add(data.get(0));
 			}
-
 		}
-
 		for (int i = 0; i < finalized.size(); i++) {
-			System.out.println(finalized.get(i));
+			//System.out.println(finalized.get(i));
 		}
 		return finalized;
-
 	}
 
 	public ArrayList<JSONObject> matchJSON(JSONObject target, ArrayList<JSONObject> data) {
@@ -132,6 +113,7 @@ public class Json {
 		// again)
 
 		// combine the geometry field here
+		
 		JSONObject combinedGeo = new JSONObject();
 		JSONArray coordArray = new JSONArray();
 		Double latTotal = 0.0;
@@ -141,10 +123,13 @@ public class Json {
 			JSONObject geo = (JSONObject) matched.get(i).get("geometry");
 			JSONArray coordinates = (JSONArray) geo.get("coordinates");
 
-			if (coordinates.size() != 0 && !coordinates.get(0).equals("") && !coordinates.get(0).equals("NaN")) {
-				latTotal += Double.parseDouble((String) coordinates.get(0));
-				lonTotal += Double.parseDouble((String) coordinates.get(1));
-				size++;
+			if (coordinates.size() != 0 && !coordinates.get(0).toString().equals("")
+					&& !coordinates.get(0).equals("NaN")) {
+				if (!coordinates.get(0).toString().isEmpty() && !coordinates.get(1).toString().isEmpty()) {
+					latTotal += Double.parseDouble((String) coordinates.get(0));
+					lonTotal += Double.parseDouble((String) coordinates.get(1));
+					size++;
+				}
 			}
 		}
 
@@ -167,71 +152,11 @@ public class Json {
 			}
 		}
 
-		// combine the data fields
-
-		// the combined data fields needs to make sure it works for multiple datasets
-//		JSONObject combinedData = new JSONObject();
-//
-//		ArrayList<Object> uniqueDataKey = new ArrayList<Object>();
-//		ArrayList<JSONArray> dataSetArray = new ArrayList<JSONArray>();
-//
-//		for (int i = 0; i < matched.size(); i++) {
-//			JSONObject data = (JSONObject) matched.get(i).get("data");
-//			Object[] dataKey = data.keySet().toArray();
-//			for (int j = 0; j < dataKey.length; j++) {
-//				if (!uniqueDataKey.contains(dataKey[j])) {
-//					uniqueDataKey.add(dataKey[j]);
-//					dataSetArray.add(new JSONArray());
-//				}
-//				if (data.get(dataKey[j]) instanceof JSONObject) {
-//					if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(data.get(dataKey[j])))
-//						dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(data.get(dataKey[j]));
-//				} else if (data.get(dataKey[j]) instanceof JSONArray) {
-//					JSONArray temp = (JSONArray) data.get(dataKey[j]);
-//					for (int k = 0; k < temp.size(); k++) {
-//						if (!dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).contains(temp.get(k))) {
-//							dataSetArray.get(uniqueDataKey.indexOf(dataKey[j])).add(temp.get(k));
-//						}
-//					}
-//				}
-//
-//			}
-//		}
-//
-//		for (int i = 0; i < dataSetArray.size(); i++) {
-//			combinedData.put(uniqueDataKey.get(i), dataSetArray.get(i));
-//		}
-		
-
 		JSONObject consolidatedJSON = new JSONObject();
 		consolidatedJSON.put("geometry", combinedGeo);
-		//consolidatedJSON.put("data", combinedData);
 		consolidatedJSON.put("properties", combinedProp);
-		//consolidatedJSON.put("matching properties", (JSONObject) matched.get(0).get("matching properties"));
 		consolidatedJSON.put("type", "Feature");
 
-		// have to check the keys that match and then append the data
-
 		return consolidatedJSON;
-	}
-
-	public boolean compObj(JSONObject obj1, JSONObject obj2) {
-		char[] first = obj1.toJSONString().toCharArray();
-		char[] second = obj2.toJSONString().toCharArray();
-		Arrays.sort(first);
-		Arrays.sort(second);
-		return Arrays.equals(first, second);
-	}
-
-	public boolean compObj(JSONArray array, JSONObject obj) {
-		for (int i = 0; i < array.size(); i++) {
-			char[] first = array.get(i).toString().toCharArray();
-			char[] second = obj.toString().toCharArray();
-			Arrays.sort(first);
-			Arrays.sort(second);
-			if (Arrays.equals(first, second))
-				return true;
-		}
-		return false;
 	}
 }

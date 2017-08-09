@@ -10,7 +10,6 @@ import javax.swing.JTabbedPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import GUI.Data;
 import GUI.Geometry;
 import GUI.JsonGUI;
 import GUI.Properties;
@@ -29,16 +28,13 @@ public class Handler {
 
 		Geometry geometry = new Geometry();
 		Properties properties = new Properties();
-		Data data = new Data();
 		tabbedPane.addTab("Geometry", geometry);
 		tabbedPane.addTab("Properties", properties);
-		tabbedPane.addTab("Data", data);
 	}
 
 	public void insertTabs() {
 		tabbedPane.setComponentAt(0, (Component) AllGUI[0][0]);
 		tabbedPane.setComponentAt(1, (Component) AllGUI[0][1]);
-		tabbedPane.setComponentAt(2, (Component) AllGUI[0][2]);
 		iteration = 0;
 		
 	}
@@ -47,7 +43,7 @@ public class Handler {
 		ArrayList<String[]> allHeaders = fc.getAllHeaders();
 		
 		for(int i = 0; i < allHeaders.size(); i++){
-			for(int j = 0; j < 3; j++) {
+			for(int j = 0; j < 2; j++) {
 				AllGUI[i][j].deleteCB();
 				AllGUI[i][j].insertCB(allHeaders.get(i));
 			}
@@ -57,11 +53,10 @@ public class Handler {
 
 	public void makeTabs() {
 		selectedTab = new int[fc.getNumFiles()];
-		AllGUI = new JsonGUI[fc.getNumFiles()][3];
+		AllGUI = new JsonGUI[fc.getNumFiles()][2];
 		for (int i = 0; i < AllGUI.length; i++) {
 			AllGUI[i][0] = new Geometry();
 			AllGUI[i][1] = new Properties();
-			AllGUI[i][2] = new Data();
 		}
 	}
 	
@@ -74,7 +69,6 @@ public class Handler {
 		}
 		tabbedPane.setComponentAt(0, (Component) AllGUI[iteration][0]);
 		tabbedPane.setComponentAt(1, (Component) AllGUI[iteration][1]);
-		tabbedPane.setComponentAt(2, (Component) AllGUI[iteration][2]);
 		tabbedPane.setSelectedIndex(selectedTab[iteration]);
 	}
 	
@@ -87,7 +81,6 @@ public class Handler {
 		}
 		tabbedPane.setComponentAt(0, (Component) AllGUI[iteration][0]);
 		tabbedPane.setComponentAt(1, (Component) AllGUI[iteration][1]);
-		tabbedPane.setComponentAt(2, (Component) AllGUI[iteration][2]);
 		tabbedPane.setSelectedIndex(selectedTab[iteration]);
 	}
 	
@@ -97,14 +90,13 @@ public class Handler {
 		iteration = i;
 		tabbedPane.setComponentAt(0, (Component) AllGUI[iteration][0]);
 		tabbedPane.setComponentAt(1, (Component) AllGUI[iteration][1]);
-		tabbedPane.setComponentAt(2, (Component) AllGUI[iteration][2]);
 		tabbedPane.setSelectedIndex(selectedTab[iteration]);
 		
 	}
 
-	public void getJson() throws IOException {
+	public void getJson() {
 	
-		
+		Selector.startTime = System.nanoTime();
 		
 		Json[] jsonCreator = new Json[fc.getNumFiles()];
 		ArrayList<ArrayList<String[]>> DATA = fc.getAllData();
@@ -119,14 +111,15 @@ public class Handler {
 			}
 		}
 		
-		System.out.println("-------------------------------------");
-		System.out.println(directoryConverge.size());
+		//System.out.println("-------------------------------------");
+		//System.out.println(directoryConverge.size());
 		
 		Json finalJSON = new Json();
 		ArrayList<JSONObject> finalArray = finalJSON.convergeJson(directoryConverge);
 		//final array is the template
 		missingGeometry(finalArray);
-		Builder builder = new Builder(finalArray, fc.getAllData());
+		
+		Builder builder = new Builder(finalArray, fc.getAllData(), fc);
 		builder.cycle();
 		
 		//pack(finalArray);
@@ -143,17 +136,7 @@ public class Handler {
 		endProduct.put("features", features);
 		endProduct.put("name", fc.getDirectoryName());
 		
-		System.out.println(endProduct);
-		
-//		try (FileWriter file = new FileWriter("/Users/azum288/Desktop/Locations/file1.json")) {
-//			file.write(endProduct.toJSONString());
-//			System.out.println("Successfully Copied JSON Object to File...");
-//			System.out.println("\nJSON Object: " + endProduct);
-//		}
-		
-		
-		
-	
+		//System.out.println(endProduct);
 	}
 	
 	public void missingGeometry(ArrayList<JSONObject> data) {
@@ -161,10 +144,13 @@ public class Handler {
 		for(int i = 0; i < data.size(); i++) {
 			JSONObject geo = (JSONObject) data.get(i).get("geometry");
 			JSONArray coordinates = (JSONArray) geo.get("coordinates");
-			if (coordinates.get(0).equals("NaN")) {
+			if (coordinates.size() == 0) {
+				total++;
+			}
+			else if (coordinates.get(0).equals("NaN")) {
 				total++;
 			}
 		}
-		Selector.log.append(total + " Points without Geometry" + "\n");
+		Selector.log.append(total + "/" + data.size() + " Points without Geometry" + "\n");
 	}
 }

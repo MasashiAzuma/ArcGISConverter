@@ -12,18 +12,22 @@ public class Builder {
 	private final ArrayList<JSONObject> TEMPLATE;
 	private ArrayList<ArrayList<String[]>> DATA;
 	private ArrayList<JSONObject> features;
-
-	public Builder(ArrayList<JSONObject> template, ArrayList<ArrayList<String[]>> data) {
+	private FileChooser fc;
+	public Builder(ArrayList<JSONObject> template, ArrayList<ArrayList<String[]>> data, FileChooser fc) {
 		this.TEMPLATE = template;
 		this.DATA = data;
-
+		this.fc = fc;
 	}
 
 	public void cycle() {
+		Selector.displayTime("Before build cycle");
+		
 		features = new ArrayList<JSONObject>();
 		for (int i = 0; i < DATA.size(); i++) {
 			for (int j = 1; j < DATA.get(i).size(); j++) {
+				Selector.displayTime("each build cycle");
 				for (int k = 0; k < DATA.get(i).get(j).length; k++) {
+					
 					// cycles through all data sheets
 					if (match(DATA.get(i).get(j)[k]) != -1) {
 						int templateNum = match(DATA.get(i).get(j)[k]);
@@ -36,7 +40,6 @@ public class Builder {
 				}
 			}
 		}
-
 		this.writeJSON(features);
 	}
 
@@ -58,7 +61,7 @@ public class Builder {
 		JSONObject properties = (JSONObject) targetTemplate.get("properties");
 		JSONObject propertiesCopy = (JSONObject) properties.clone();
 
-		for (int i = 0; i < targetDATA.length; i++) {
+		for (int i = 0; i < header.length; i++) {
 			propertiesCopy.put(header[i], targetDATA[i]);
 		}
 
@@ -66,8 +69,6 @@ public class Builder {
 		feature.put("type", "Feature");
 		feature.put("geometry", targetTemplate.get("geometry"));
 		feature.put("properties", propertiesCopy);
-
-		// System.out.println(feature);
 
 		return feature;
 	}
@@ -81,11 +82,12 @@ public class Builder {
 		}
 		finalObj.put("type", "FeatureCollection");
 		finalObj.put("features", features);
+		
+		Selector.displayTime("End time");
 
-		try (FileWriter file = new FileWriter("/Users/azum288/Desktop/Locations/file1.json")) {
+		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + "test.json")) {
 			file.write(finalObj.toJSONString());
 			Selector.log.append("JSON File created successfully" + "\n");
-			System.out.println("\nJSON Object: " + finalObj);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

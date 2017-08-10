@@ -91,7 +91,7 @@ public class Builder {
 		Selector.displayTime("End time");
 
 		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + "test.json")) {
-			file.write(finalObj.toJSONString());
+			finalObj.writeJSONString(file);
 			Selector.log.append("JSON File created successfully" + "\n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

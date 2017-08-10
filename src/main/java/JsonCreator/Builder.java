@@ -25,22 +25,27 @@ public class Builder {
 		features = new ArrayList<JSONObject>();
 		for (int i = 0; i < DATA.size(); i++) {
 			for (int j = 1; j < DATA.get(i).size(); j++) {
-				Selector.displayTime("each build cycle");
-				for (int k = 0; k < DATA.get(i).get(j).length; k++) {
-					
-					// cycles through all data sheets
-					if (match(DATA.get(i).get(j)[k]) != -1) {
-						int templateNum = match(DATA.get(i).get(j)[k]);
-						JSONObject feature = createFeature(TEMPLATE.get(templateNum), DATA.get(i).get(j),
-								DATA.get(i).get(0));
-						features.add(feature);
-					} else {
-						// there is no template match
-					}
-				}
+				Selector.displayTime("each build cycle" + j);
+				features.add(this.buildCycle(DATA.get(i).get(j), i, j));
 			}
 		}
 		this.writeJSON(features);
+	}
+	
+	public JSONObject buildCycle(String[] row, int i, int j){
+		for(int k = 0; k < row.length; k++){
+			// cycles through all data sheets
+			int templateNum = match(row[k]);
+			if (templateNum != -1) {
+				JSONObject feature = createFeature(TEMPLATE.get(templateNum), DATA.get(i).get(j),
+						DATA.get(i).get(0));
+				return feature;
+			} else {
+				// there is no template match
+			}
+		}
+		return null;
+		
 	}
 
 	// Returns the template that matches the DATA returns -1 if nothing matches

@@ -34,7 +34,8 @@ public class FileChooser {
 
 		chooser = new JFileChooser();
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Acceptable Files", "csv", "txt"));
-		chooser.setCurrentDirectory(new File("/Users/azum288/Desktop/Patrick Data"));
+		chooser.setCurrentDirectory(new File("/Users/SerARK/Desktop/Patrick Data"));
+		//chooser.setCurrentDirectory(new File("/Users/azum288/Desktop/Patrick Data"));
 		chooser.setDialogTitle(choosertitle);
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		chooser.setAcceptAllFileFilterUsed(false);

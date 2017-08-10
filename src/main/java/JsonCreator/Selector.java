@@ -95,6 +95,15 @@ public class Selector extends JFrame {
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 1;
 		contentPane.add(comboBox, gbc_comboBox);
+		
+		//The Checkbox that shows if all the files are the same or not
+		JCheckBox chckbxAllFileSame = new JCheckBox("All File Same Format");
+		chckbxAllFileSame.isSelected();
+		GridBagConstraints gbc_chckbxAllFileSame = new GridBagConstraints();
+		gbc_chckbxAllFileSame.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxAllFileSame.gridx = 2;
+		gbc_chckbxAllFileSame.gridy = 1;
+		contentPane.add(chckbxAllFileSame, gbc_chckbxAllFileSame);
 
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
 		gbc_tabbedPane.gridwidth = 3;
@@ -135,17 +144,33 @@ public class Selector extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(log);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridwidth = 3;
-		gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 4;
 		contentPane.add(scrollPane, gbc_scrollPane);
+		
+		chckbxAllFileSame.addActionListener((ActionEvent e)->{
+			if (chckbxAllFileSame.isSelected()){
+				hd.makeTabs(chckbxAllFileSame.isSelected());
+				hd.insertHeaders(chckbxAllFileSame.isSelected());
+				hd.select(0);
+				comboBox.setSelectedIndex(0);
+				contentPane.validate();
+				contentPane.repaint();
+			}
+			else{
+				hd.makeTabs(chckbxAllFileSame.isSelected());
+				hd.insertHeaders(chckbxAllFileSame.isSelected());
+				contentPane.validate();
+				contentPane.repaint();
+			}
+		});
 
 		btnAddFile.addActionListener((ActionEvent e) -> {
 			fc.reset();
 			fc.openFile();
-			hd.makeTabs();
-			hd.insertHeaders();
+			hd.makeTabs(chckbxAllFileSame.isSelected());
+			hd.insertHeaders(chckbxAllFileSame.isSelected());
 			hd.insertTabs();
 
 			comboBox.setModel(new DefaultComboBoxModel(fc.getFile()));
@@ -169,7 +194,8 @@ public class Selector extends JFrame {
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
 				//new Thread(()->MyProgressBar.gen(this)).start();
-				new Thread(()->hd.getJson()).start();
+				Thread converter = new Thread(()->hd.getJson(chckbxAllFileSame.isSelected()));
+				converter.start();
 				//MyProgessBar.get().update(updateContext);
 		});
 		

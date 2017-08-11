@@ -124,7 +124,7 @@ public class Json {
 			JSONArray coordinates = (JSONArray) geo.get("coordinates");
 
 			if (coordinates.size() != 0 && !coordinates.get(0).toString().equals("")
-					&& !coordinates.get(0).equals("NaN")) {
+					&& !coordinates.get(0).equals("NaN") && !coordinates.get(0).equals("NA")) {
 				if (!coordinates.get(0).toString().isEmpty() && !coordinates.get(1).toString().isEmpty()) {
 					latTotal += Double.parseDouble((String) coordinates.get(0));
 					lonTotal += Double.parseDouble((String) coordinates.get(1));

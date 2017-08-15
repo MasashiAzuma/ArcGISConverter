@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,11 +27,14 @@ public class Selector extends JFrame {
 	public static JLabel label;
 	public static long startTime;
 	public static long lapTime;
+	public static MyProgressBar myProgressBar;
 	
 	private JPanel contentPane;
 	private String[] headers;
 	private ArrayList<String[]> allData;
 	private ArrayList<JsonGUI> allUI;
+	private JProgressBar progressBar;
+	
 	
 
 	/**
@@ -63,9 +67,9 @@ public class Selector extends JFrame {
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[] { 0, 0, 200, 0 };
-		gbl_contentPane.rowHeights = new int[] { 0, 0, 357, 0, 0, 0, 0 };
+		gbl_contentPane.rowHeights = new int[] { 0, 0, 357, 0, 0, 0, 0, 0 };
 		gbl_contentPane.columnWeights = new double[] { 1.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
 
 		JButton btnAddFile = new JButton("Add File");
@@ -96,15 +100,6 @@ public class Selector extends JFrame {
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 1;
 		contentPane.add(comboBox, gbc_comboBox);
-		
-		//The Checkbox that shows if all the files are the same or not
-		JCheckBox chckbxAllFileSame = new JCheckBox("All File Same Format");
-		chckbxAllFileSame.isSelected();
-		GridBagConstraints gbc_chckbxAllFileSame = new GridBagConstraints();
-		gbc_chckbxAllFileSame.insets = new Insets(0, 0, 5, 0);
-		gbc_chckbxAllFileSame.gridx = 2;
-		gbc_chckbxAllFileSame.gridy = 1;
-		contentPane.add(chckbxAllFileSame, gbc_chckbxAllFileSame);
 
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
 		gbc_tabbedPane.gridwidth = 3;
@@ -114,13 +109,6 @@ public class Selector extends JFrame {
 		gbc_tabbedPane.gridy = 2;
 		contentPane.add(tabbedPane, gbc_tabbedPane);
 
-		JButton btnPrev = new JButton("Previous");
-		GridBagConstraints gbc_btnPrev = new GridBagConstraints();
-		gbc_btnPrev.insets = new Insets(0, 0, 5, 5);
-		gbc_btnPrev.gridx = 0;
-		gbc_btnPrev.gridy = 3;
-		contentPane.add(btnPrev, gbc_btnPrev);
-
 		JButton btnSubmit = new JButton("Submit");
 		GridBagConstraints gbc_btnSubmit = new GridBagConstraints();
 		gbc_btnSubmit.insets = new Insets(0, 0, 5, 5);
@@ -128,23 +116,27 @@ public class Selector extends JFrame {
 		gbc_btnSubmit.gridy = 3;
 		contentPane.add(btnSubmit, gbc_btnSubmit);
 
-		JButton btnNext = new JButton("Next");
-		btnNext.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		GridBagConstraints gbc_btnNext = new GridBagConstraints();
-		gbc_btnNext.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNext.gridx = 2;
-		gbc_btnNext.gridy = 3;
-		contentPane.add(btnNext, gbc_btnNext);
-		
 		label = new JLabel("");
 		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.insets = new Insets(0, 0, 5, 5);
-		gbc_label.gridx = 1;
+		gbc_label.gridwidth = 3;
+		gbc_label.insets = new Insets(0, 0, 5, 0);
+		gbc_label.gridx = 0;
 		gbc_label.gridy = 4;
 		contentPane.add(label, gbc_label);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.gridwidth = 3;
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 5;
+		contentPane.add(panel, gbc_panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		panel.add(progressBar);
 		
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
@@ -154,57 +146,28 @@ public class Selector extends JFrame {
 		gbc_scrollPane.gridwidth = 3;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 5;
+		gbc_scrollPane.gridy = 6;
 		contentPane.add(scrollPane, gbc_scrollPane);
-		
-		chckbxAllFileSame.addActionListener((ActionEvent e)->{
-			if (chckbxAllFileSame.isSelected()){
-				hd.makeTabs(chckbxAllFileSame.isSelected());
-				hd.insertHeaders(chckbxAllFileSame.isSelected());
-				hd.select(0);
-				comboBox.setSelectedIndex(0);
-				contentPane.validate();
-				contentPane.repaint();
-			}
-			else{
-				hd.makeTabs(chckbxAllFileSame.isSelected());
-				hd.insertHeaders(chckbxAllFileSame.isSelected());
-				contentPane.validate();
-				contentPane.repaint();
-			}
-		});
 
 		btnAddFile.addActionListener((ActionEvent e) -> {
 			fc.reset();
 			fc.openFile();
-			hd.makeTabs(chckbxAllFileSame.isSelected());
-			hd.insertHeaders(chckbxAllFileSame.isSelected());
+			hd.makeTabs(true);
+			hd.insertHeaders(true);
 			hd.insertTabs();
 
 			comboBox.setModel(new DefaultComboBoxModel(fc.getFile()));
 
 		});
-		
-		btnNext.addActionListener((ActionEvent e) -> {
-			hd.next();
-			comboBox.setSelectedIndex(hd.iteration);
-			contentPane.validate();
-			contentPane.repaint();
-			
-		});
-		
-		btnPrev.addActionListener((ActionEvent e) -> {
-			hd.prev();
-			comboBox.setSelectedIndex(hd.iteration);
-			contentPane.validate();
-			contentPane.repaint();
-		}); 
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
-				//new Thread(()->MyProgressBar.gen(this)).start();
-				Thread converter = new Thread(()->hd.getJson(chckbxAllFileSame.isSelected()));
+				myProgressBar = new MyProgressBar(progressBar);
+				Thread progress = new Thread(()->myProgressBar.start());
+				progress.start();
+				
+				Thread converter = new Thread(()->hd.getJson(true));
 				converter.start();
-				//MyProgessBar.get().update(updateContext);
+				
 		});
 		
 		comboBox.addItemListener((ItemEvent e) -> {

@@ -25,8 +25,9 @@ public class Builder {
 
 		features = new ArrayList<JSONObject>();
 		for (int i = 0; i < DATA.size(); i++) {
+			Selector.myProgressBar.update();
+			Selector.label.setText("Converge Cycle: " + (i+1) + "/" + DATA.size() + " - " + fc.getFileName(i));
 			for (int j = 1; j < DATA.get(i).size(); j++) {
-				Selector.label.setText("Converge Cycle: " + i + "/" + (DATA.size()-1) + " - " + fc.getFileName(i));
 				Selector.displayTime("each build cycle" + j + "file: " + fc.getFileName(i));
 				features.add(this.buildCycle(DATA.get(i).get(j), i, j));
 			}
@@ -93,6 +94,7 @@ public class Builder {
 
 		Selector.label.setText("");
 		Selector.displayTime("End time");
+		Selector.myProgressBar.kill();
 
 		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + fc.getSelectedFileName() + ".json")) {
 			finalObj.writeJSONString(file);
@@ -108,7 +110,7 @@ public class Builder {
 		JSONArray coordinates = (JSONArray) geo.get("coordinates");
 		JSONArray newCoordinates = new JSONArray();
 		
-		if (coordinates.get(0) instanceof String && !coordinates.get(0).equals("NA") && !coordinates.get(0).equals("NaN")) {
+		if (coordinates.get(0) instanceof String && !coordinates.get(0).equals("NA") && !coordinates.get(0).equals("NaN") && !coordinates.get(0).equals("")) {
 			newCoordinates.add(Double.parseDouble((String) coordinates.get(0)));
 			newCoordinates.add(Double.parseDouble((String) coordinates.get(1)));
 			geo.put("coordinates", newCoordinates);

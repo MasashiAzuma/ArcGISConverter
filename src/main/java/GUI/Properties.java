@@ -110,8 +110,12 @@ public class Properties extends JPanel implements JsonGUI{
 	}
 
 	@Override
-	public void insertCB(String[] headers) {
-		this.headers = headers;
+	public void insertCB(Object[] headers) {
+		
+		this.headers = new String[headers.length];
+		for(int i = 0 ; i < headers.length; i++) {
+			this.headers[i] = headers[i].toString();
+		}
 		Container c = panel;
 		for (int i = 0; i < c.getComponentCount(); i++) {
 			JsonGUI g = (JsonGUI) c.getComponent(i);

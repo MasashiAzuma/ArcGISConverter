@@ -103,10 +103,10 @@ public class Geometry extends JPanel implements JsonGUI {
 	}
 
 	@Override
-	public void insertCB(String[] headers) {
+	public void insertCB(Object[] headers) {
 		for (int i = 0; i < headers.length; i++) {
-			lonCB.addItem(headers[i]);
-			latCB.addItem(headers[i]);
+			lonCB.addItem(headers[i].toString());
+			latCB.addItem(headers[i].toString());
 		}
 
 	}
@@ -145,5 +145,4 @@ public class Geometry extends JPanel implements JsonGUI {
 
 		return geometry;
 	}
-
 }

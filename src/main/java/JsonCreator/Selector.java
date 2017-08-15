@@ -190,7 +190,7 @@ public class Selector extends JFrame {
 			comboBox.setSelectedIndex(hd.iteration);
 			contentPane.validate();
 			contentPane.repaint();
-		});
+		}); 
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
 				//new Thread(()->MyProgressBar.gen(this)).start();

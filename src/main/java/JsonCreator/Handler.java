@@ -4,6 +4,9 @@ import java.awt.Component;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JTabbedPane;
 
@@ -43,9 +46,23 @@ public class Handler {
 	public void insertHeaders(boolean allFormatSame) {
 		ArrayList<String[]> allHeaders = fc.getAllHeaders();
 		if (allFormatSame) {
+			
+			HashSet<String> singleHeaders = new HashSet<String>();
+			for(int i = 0; i < allHeaders.size(); i++) {
+				for(int j = 0; j < allHeaders.get(i).length; j++) {
+					singleHeaders.add(allHeaders.get(i)[j]);
+				}
+			}
+			
+			Object[] singleHeaderArray = singleHeaders.toArray();
+			Set<String> ordered = new TreeSet<String>();
+			for(int i = 0; i < singleHeaderArray.length; i++) {
+				ordered.add(singleHeaderArray[i].toString());
+			}
+			
 			for (int j = 0; j < 2; j++) {
 				AllGUI[0][j].deleteCB();
-				AllGUI[0][j].insertCB(allHeaders.get(0));
+				AllGUI[0][j].insertCB(ordered.toArray());
 			}
 		} else {
 			for (int i = 0; i < allHeaders.size(); i++) {
@@ -119,24 +136,25 @@ public class Handler {
 
 		if (allFileFormat) {
 			for (int i = 0; i < jsonCreator.length; i++) {
+				Selector.displayTime("file process -  " + fc.getFileName(i) + " " + i + "/" + (jsonCreator.length-1));
 				jsonCreator[i] = new Json();
 				ArrayList<JSONObject> temp = jsonCreator[i].getJson(AllGUI[0], DATA.get(i));
-				Selector.displayTime("file process");
+				
 				for (int j = 0; j < temp.size(); j++) {
 					directoryConverge.add(temp.get(j));
-					
+
 				}
 			}
 
 		} else {
 
 			for (int i = 0; i < jsonCreator.length; i++) {
+				Selector.displayTime("file process -  " + fc.getFileName(i)+ " " + i + "/" + (jsonCreator.length-1));
 				jsonCreator[i] = new Json();
-				Selector.displayTime("file process");
 				ArrayList<JSONObject> temp = jsonCreator[i].getJson(AllGUI[i], DATA.get(i));
 				for (int j = 0; j < temp.size(); j++) {
 					directoryConverge.add(temp.get(j));
-					
+
 				}
 			}
 		}
@@ -147,7 +165,7 @@ public class Handler {
 		Json finalJSON = new Json();
 		ArrayList<JSONObject> finalArray = finalJSON.convergeJson(directoryConverge);
 		// final array is the template
-		missingGeometry(finalArray);
+		// missingGeometry(finalArray);
 
 		Builder builder = new Builder(finalArray, fc.getAllData(), fc);
 		builder.cycle();
@@ -169,17 +187,4 @@ public class Handler {
 		// System.out.println(endProduct);
 	}
 
-	public void missingGeometry(ArrayList<JSONObject> data) {
-		int total = 0;
-		for (int i = 0; i < data.size(); i++) {
-			JSONObject geo = (JSONObject) data.get(i).get("geometry");
-			JSONArray coordinates = (JSONArray) geo.get("coordinates");
-			if (coordinates.size() == 0) {
-				total++;
-			} else if (coordinates.get(0).equals("NaN")) {
-				total++;
-			}
-		}
-		Selector.log.append(total + "/" + data.size() + " Points without Geometry" + "\n");
-	}
 }

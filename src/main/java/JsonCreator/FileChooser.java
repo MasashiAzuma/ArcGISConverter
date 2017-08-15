@@ -34,8 +34,8 @@ public class FileChooser {
 
 		chooser = new JFileChooser();
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Acceptable Files", "csv", "txt"));
-		chooser.setCurrentDirectory(new File("/Users/SerARK/Desktop/Patrick Data"));
-		//chooser.setCurrentDirectory(new File("/Users/azum288/Desktop/Patrick Data"));
+		//chooser.setCurrentDirectory(new File("/Users/SerARK/Desktop/Patrick Data"));
+		chooser.setCurrentDirectory(new File("/Users/azum288/Desktop"));
 		chooser.setDialogTitle(choosertitle);
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		chooser.setAcceptAllFileFilterUsed(false);
@@ -86,10 +86,13 @@ public class FileChooser {
 			line = filter(line, "\"");
 
 			String[] split = line.split(DELIMITER, -1);
+			for(int i = 0 ; i < split.length; i++) {
+				split[i] = split[i].toLowerCase();
+			}
 			String[] headers = new String[split.length + 1];
 			headers[0] = "None";
 			for (int i = 0; i < split.length; i++) {
-				headers[i + 1] = split[i];
+				headers[i + 1] = split[i].toLowerCase();
 			}
 
 			for (int i = 0; i < headers.length; i++) {
@@ -109,7 +112,7 @@ public class FileChooser {
 						if (tokens[i].trim().toString().equalsIgnoreCase("")) {
 							tokens[i] = "";
 						} else {
-							tokens[i] = tokens[i].trim();
+							tokens[i] = this.filter(tokens[i].trim(), "\"");
 						}
 					}
 					allData.add(tokens);
@@ -118,6 +121,10 @@ public class FileChooser {
 		}
 
 		DATA.add(allData);
+	}
+	
+	public String getFileName(int num) {
+		return directory[num].getName();
 	}
 
 	public void reset() {
@@ -152,6 +159,10 @@ public class FileChooser {
 
 	public int getNumFiles() {
 		return directory.length;
+	}
+	
+	public String getSelectedFileName() {
+		return chooser.getSelectedFile().getName();
 	}
 
 	public String getDirectoryName() {

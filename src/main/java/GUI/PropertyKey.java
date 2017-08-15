@@ -53,9 +53,9 @@ public class PropertyKey extends JPanel implements JsonGUI{
 	}
 
 	@Override
-	public void insertCB(String[] headers) {
+	public void insertCB(Object[] headers) {
 		for (int i = 0; i < headers.length; i++) {
-			propertyKey.addItem(headers[i]);
+			propertyKey.addItem(headers[i].toString());
 		}
 	}
 

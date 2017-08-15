@@ -47,7 +47,7 @@ public class Json {
 
 			// add in implementation for different stuff
 			for (Object o : temp.values()) {
-				propKey.add(o);
+				propKey.add(this.filter(o.toString(), "\""));
 			}
 
 			// matched.add(data.get(0));
@@ -58,7 +58,7 @@ public class Json {
 
 					if (prop.containsValue(propKey.get(j))) {
 						for (Object o : prop.values()) {
-							propKey.add(o);
+							propKey.add(this.filter(o.toString(), "\""));
 						}
 						matched.add(data.remove(i));
 						break;
@@ -76,33 +76,6 @@ public class Json {
 		return finalized;
 	}
 
-	public ArrayList<JSONObject> matchJSON(JSONObject target, ArrayList<JSONObject> data) {
-		// given a single target we have to match the keys then within the matched keys
-		// find the matched values
-		// if a value is matched add the JSON into a matched ArrayList
-
-		// json objects within data that match (property wise) with target (includes
-		// target)
-		ArrayList<JSONObject> matched = new ArrayList<JSONObject>();
-		matched.add(target);
-		JSONObject targProp = (JSONObject) target.get("matching Properties");
-		Object[] targKeys = targProp.keySet().toArray();
-
-		for (int i = data.size() - 1; i <= 0; i--) {
-			JSONObject compProp = (JSONObject) data.get(i).get("matching Properties");
-			Object[] compKeys = compProp.keySet().toArray();
-			for (int j = 0; j < targKeys.length; j++) {
-				for (int k = 0; k < compKeys.length; k++) {
-					// keys are matched then we have to check if the values are matched or not
-					if (targProp.get(targKeys[j]).equals(compProp.get(compKeys[k]))) {
-						matched.add(data.remove(i));
-					}
-				}
-			}
-		}
-
-		return null;
-	}
 
 	// given a matched array list of JSONobjects I want to combine the data and
 	// properties fields
@@ -124,7 +97,7 @@ public class Json {
 			JSONArray coordinates = (JSONArray) geo.get("coordinates");
 
 			if (coordinates.size() != 0 && !coordinates.get(0).toString().equals("")
-					&& !coordinates.get(0).equals("NaN")) {
+					&& !coordinates.get(0).equals("NaN") && !coordinates.get(0).equals("NA")) {
 				if (!coordinates.get(0).toString().isEmpty() && !coordinates.get(1).toString().isEmpty()) {
 					latTotal += Double.parseDouble((String) coordinates.get(0));
 					lonTotal += Double.parseDouble((String) coordinates.get(1));
@@ -158,5 +131,12 @@ public class Json {
 		consolidatedJSON.put("type", "Feature");
 
 		return consolidatedJSON;
+	}
+	
+	private static String filter(String filter, String chars) {
+		char[] ca = chars.toCharArray();
+		for (char c : ca)
+			filter = filter.replace("" + c, "");
+		return filter;
 	}
 }

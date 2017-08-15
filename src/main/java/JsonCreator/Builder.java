@@ -13,6 +13,7 @@ public class Builder {
 	private ArrayList<ArrayList<String[]>> DATA;
 	private ArrayList<JSONObject> features;
 	private FileChooser fc;
+
 	public Builder(ArrayList<JSONObject> template, ArrayList<ArrayList<String[]>> data, FileChooser fc) {
 		this.TEMPLATE = template;
 		this.DATA = data;
@@ -21,31 +22,32 @@ public class Builder {
 
 	public void cycle() {
 		Selector.displayTime("Before build cycle");
-		
+
 		features = new ArrayList<JSONObject>();
 		for (int i = 0; i < DATA.size(); i++) {
 			for (int j = 1; j < DATA.get(i).size(); j++) {
-				Selector.displayTime("each build cycle" + j);
+				Selector.displayTime("each build cycle" + j + "file: " + fc.getFileName(i));
 				features.add(this.buildCycle(DATA.get(i).get(j), i, j));
 			}
 		}
+		this.missingGeometry(features);
 		this.writeJSON(features);
+		
 	}
-	
-	public JSONObject buildCycle(String[] row, int i, int j){
-		for(int k = 0; k < row.length; k++){
+
+	public JSONObject buildCycle(String[] row, int i, int j) {
+		for (int k = 0; k < row.length; k++) {
 			// cycles through all data sheets
 			int templateNum = match(row[k]);
 			if (templateNum != -1) {
-				JSONObject feature = createFeature(TEMPLATE.get(templateNum), DATA.get(i).get(j),
-						DATA.get(i).get(0));
+				JSONObject feature = createFeature(TEMPLATE.get(templateNum), DATA.get(i).get(j), DATA.get(i).get(0));
 				return feature;
 			} else {
 				// there is no template match
 			}
 		}
 		return null;
-		
+
 	}
 
 	// Returns the template that matches the DATA returns -1 if nothing matches
@@ -65,7 +67,7 @@ public class Builder {
 	public JSONObject createFeature(JSONObject targetTemplate, String[] targetDATA, String[] header) {
 		JSONObject properties = (JSONObject) targetTemplate.get("properties");
 		JSONObject propertiesCopy = (JSONObject) properties.clone();
-
+		
 		for (int i = 0; i < header.length; i++) {
 			propertiesCopy.put(header[i], targetDATA[i]);
 		}
@@ -83,20 +85,66 @@ public class Builder {
 		JSONArray features = new JSONArray();
 
 		for (int i = 0; i < featuresArray.size(); i++) {
-			features.add(featuresArray.get(i));
+			features.add(this.translate(featuresArray.get(i)));
 		}
 		finalObj.put("type", "FeatureCollection");
 		finalObj.put("features", features);
-		
+
 		Selector.displayTime("End time");
 
-		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + "test.json")) {
+		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + fc.getSelectedFileName() + ".json")) {
 			finalObj.writeJSONString(file);
-			Selector.log.append("JSON File created successfully" + "\n");
+			Selector.log.append(fc.getSelectedFileName() + ".json File created successfully" + "\n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public JSONObject translate(JSONObject feature) {
+		JSONObject geo = (JSONObject) feature.get("geometry");
+		JSONArray coordinates = (JSONArray) geo.get("coordinates");
+		JSONArray newCoordinates = new JSONArray();
+		
+		if (coordinates.get(0) instanceof String && !coordinates.get(0).equals("NA") && !coordinates.get(0).equals("NaN")) {
+			newCoordinates.add(Double.parseDouble((String) coordinates.get(0)));
+			newCoordinates.add(Double.parseDouble((String) coordinates.get(1)));
+			geo.put("coordinates", newCoordinates);
+			feature.put("geometry", geo);
+		}
+		
+		return feature;
+		
+	}
+
+	public void missingGeometry(ArrayList<JSONObject> data) {
+		JSONObject finalObj = new JSONObject();
+		JSONArray features = new JSONArray();
+		int total = 0;
+		for (int i = 0; i < data.size(); i++) {
+			JSONObject geo = (JSONObject) data.get(i).get("geometry");
+			JSONArray coordinates = (JSONArray) geo.get("coordinates");
+			if (coordinates.size() == 0) {
+				total++;
+				features.add(data.get(i));
+			} else if (coordinates.get(0).equals("NaN") || coordinates.get(0).equals("NA")) {
+				total++;
+				features.add(data.get(i));
+			}
+		}
+
+		finalObj.put("type", "FeatureCollection");
+		finalObj.put("features", features);
+
+		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + "MissingGeo.json")) {
+			finalObj.writeJSONString(file);
+			Selector.log.append("Missing Geo JSON File created successfully" + "\n");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Selector.log.append(total + "/" + data.size() + " Points without Geometry" + "\n");
 	}
 
 }

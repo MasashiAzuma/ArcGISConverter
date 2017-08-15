@@ -26,6 +26,7 @@ public class Builder {
 		features = new ArrayList<JSONObject>();
 		for (int i = 0; i < DATA.size(); i++) {
 			for (int j = 1; j < DATA.get(i).size(); j++) {
+				Selector.label.setText("Converge Cycle: " + i + "/" + (DATA.size()-1) + " - " + fc.getFileName(i));
 				Selector.displayTime("each build cycle" + j + "file: " + fc.getFileName(i));
 				features.add(this.buildCycle(DATA.get(i).get(j), i, j));
 			}
@@ -90,6 +91,7 @@ public class Builder {
 		finalObj.put("type", "FeatureCollection");
 		finalObj.put("features", features);
 
+		Selector.label.setText("");
 		Selector.displayTime("End time");
 
 		try (FileWriter file = new FileWriter(fc.getDirectoryPath() + "/" + fc.getSelectedFileName() + ".json")) {

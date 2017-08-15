@@ -23,6 +23,7 @@ import java.awt.event.ItemEvent;
 
 public class Selector extends JFrame {
 	public static JTextArea log;
+	public static JLabel label;
 	public static long startTime;
 	public static long lapTime;
 	
@@ -62,9 +63,9 @@ public class Selector extends JFrame {
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[] { 0, 0, 200, 0 };
-		gbl_contentPane.rowHeights = new int[] { 0, 0, 357, 0, 0, 0 };
+		gbl_contentPane.rowHeights = new int[] { 0, 0, 357, 0, 0, 0, 0 };
 		gbl_contentPane.columnWeights = new double[] { 1.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
 
 		JButton btnAddFile = new JButton("Add File");
@@ -138,6 +139,13 @@ public class Selector extends JFrame {
 		gbc_btnNext.gridy = 3;
 		contentPane.add(btnNext, gbc_btnNext);
 		
+		label = new JLabel("");
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.insets = new Insets(0, 0, 5, 5);
+		gbc_label.gridx = 1;
+		gbc_label.gridy = 4;
+		contentPane.add(label, gbc_label);
+		
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
 		log.setEditable(false);
@@ -146,7 +154,7 @@ public class Selector extends JFrame {
 		gbc_scrollPane.gridwidth = 3;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 4;
+		gbc_scrollPane.gridy = 5;
 		contentPane.add(scrollPane, gbc_scrollPane);
 		
 		chckbxAllFileSame.addActionListener((ActionEvent e)->{
@@ -220,7 +228,9 @@ public class Selector extends JFrame {
 //		make();
 //	}
 //	private void make() {
-//		// TODO Auto-generated method stub
+//		JProgressBar progressBar = new JProgressBar(0, 100);
+//        progressBar.setValue(0);
+//        progressBar.setStringPainted(true);
 //		
 //	}
 //	public void update(UpdateContext ux) {

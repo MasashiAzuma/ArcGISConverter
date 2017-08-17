@@ -47,8 +47,7 @@ public class Json {
 
 			// add in implementation for different stuff
 			for (Object o : temp.values()) {
-				if (!o.toString().equalsIgnoreCase("wellAttributes_clean_lonlat.csv"))
-					propKey.add(this.filter(o.toString(), "\""));
+				propKey.add(this.filter(o.toString(), "\""));
 			}
 
 			// matched.add(data.get(0));
@@ -59,8 +58,7 @@ public class Json {
 
 					if (prop.containsValue(propKey.get(j))) {
 						for (Object o : prop.values()) {
-							if (!o.toString().equalsIgnoreCase("wellAttributes_clean_lonlat.csv"))
-								propKey.add(this.filter(o.toString(), "\""));
+							propKey.add(this.filter(o.toString(), "\""));
 						}
 						matched.add(data.remove(i));
 						break;

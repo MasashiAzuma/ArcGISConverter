@@ -28,14 +28,12 @@ public class Selector extends JFrame {
 	public static long startTime;
 	public static long lapTime;
 	public static MyProgressBar myProgressBar;
-	
+
 	private JPanel contentPane;
 	private String[] headers;
 	private ArrayList<String[]> allData;
 	private ArrayList<JsonGUI> allUI;
 	private JProgressBar progressBar;
-	
-	
 
 	/**
 	 * Launch the application.
@@ -53,10 +51,10 @@ public class Selector extends JFrame {
 			}
 		});
 	}
-	
+
 	public static void displayTime(String thing) {
 		Selector.lapTime = System.nanoTime();
-		System.out.println((lapTime - startTime)/1000000000 + " sec: " + thing);
+		System.out.println((lapTime - startTime) / 1000000000 + " sec: " + thing);
 	}
 
 	public Selector() {
@@ -101,6 +99,13 @@ public class Selector extends JFrame {
 		gbc_comboBox.gridy = 1;
 		contentPane.add(comboBox, gbc_comboBox);
 
+		JCheckBox chckbxFileNameIdentifier = new JCheckBox("File Name Identifier");
+		GridBagConstraints gbc_chckbxFileNameIdentifier = new GridBagConstraints();
+		gbc_chckbxFileNameIdentifier.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxFileNameIdentifier.gridx = 2;
+		gbc_chckbxFileNameIdentifier.gridy = 1;
+		contentPane.add(chckbxFileNameIdentifier, gbc_chckbxFileNameIdentifier);
+
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
 		gbc_tabbedPane.gridwidth = 3;
 		gbc_tabbedPane.insets = new Insets(0, 0, 5, 0);
@@ -123,21 +128,21 @@ public class Selector extends JFrame {
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 4;
 		contentPane.add(label, gbc_label);
-		
+
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridwidth = 3;
-		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 5;
 		contentPane.add(panel, gbc_panel);
 		panel.setLayout(new BorderLayout(0, 0));
-		
+
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		panel.add(progressBar);
-		
+
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
 		log.setEditable(false);
@@ -148,6 +153,14 @@ public class Selector extends JFrame {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 6;
 		contentPane.add(scrollPane, gbc_scrollPane);
+
+		chckbxFileNameIdentifier.addActionListener((ActionEvent e) -> {
+			if (chckbxFileNameIdentifier.isSelected()) {
+				
+			} else {
+				
+			}
+		});
 
 		btnAddFile.addActionListener((ActionEvent e) -> {
 			fc.reset();
@@ -161,15 +174,17 @@ public class Selector extends JFrame {
 		});
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
-				myProgressBar = new MyProgressBar(progressBar);
-				Thread progress = new Thread(()->myProgressBar.start());
-				progress.start();
-				
-				Thread converter = new Thread(()->hd.getJson(true));
-				converter.start();
-				
+			// gotta write something that will process the headers as property
+
+			myProgressBar = new MyProgressBar(progressBar);
+			Thread progress = new Thread(() -> myProgressBar.start());
+			progress.start();
+
+			Thread converter = new Thread(() -> hd.getJson(true, chckbxFileNameIdentifier.isSelected()));
+			converter.start();
+
 		});
-		
+
 		comboBox.addItemListener((ItemEvent e) -> {
 			hd.select(comboBox.getSelectedIndex());
 			contentPane.validate();
@@ -178,33 +193,33 @@ public class Selector extends JFrame {
 
 	}
 }
-//class MyProgressBar extends JDialog{
-//	private static final long serialVersionUID = 1L;
-//	private static Optional<MyProgressBar> mpb = Optional.empty();
-//	public static void gen(JFrame jf) {
-//		if(!mpb.isPresent()) {
-//			mpb=Optional.of(new MyProgressBar(jf));						
-//		}					
-//	}
-//	MyProgressBar(JFrame jf){
-//		super(jf, true);
-//		make();
-//	}
-//	private void make() {
-//		JProgressBar progressBar = new JProgressBar(0, 100);
-//        progressBar.setValue(0);
-//        progressBar.setStringPainted(true);
-//		
-//	}
-//	public void update(UpdateContext ux) {
-//		//update code
-//		if(ux.isKill) {
-//			end();
-//		}
-//	}
-//	private void end() {
-//		mpb=Optional.empty();
-//		this.dispose();
-//	}
-//	
-//}
+// class MyProgressBar extends JDialog{
+// private static final long serialVersionUID = 1L;
+// private static Optional<MyProgressBar> mpb = Optional.empty();
+// public static void gen(JFrame jf) {
+// if(!mpb.isPresent()) {
+// mpb=Optional.of(new MyProgressBar(jf));
+// }
+// }
+// MyProgressBar(JFrame jf){
+// super(jf, true);
+// make();
+// }
+// private void make() {
+// JProgressBar progressBar = new JProgressBar(0, 100);
+// progressBar.setValue(0);
+// progressBar.setStringPainted(true);
+//
+// }
+// public void update(UpdateContext ux) {
+// //update code
+// if(ux.isKill) {
+// end();
+// }
+// }
+// private void end() {
+// mpb=Optional.empty();
+// this.dispose();
+// }
+//
+// }

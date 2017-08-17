@@ -28,7 +28,7 @@ public class Builder {
 			Selector.myProgressBar.update();
 			Selector.label.setText("Converge Cycle: " + (i+1) + "/" + DATA.size() + " - " + fc.getFileName(i));
 			for (int j = 1; j < DATA.get(i).size(); j++) {
-				Selector.displayTime("each build cycle" + j + "file: " + fc.getFileName(i));
+				//Selector.displayTime("each build cycle" + j + "file: " + fc.getFileName(i));
 				features.add(this.buildCycle(DATA.get(i).get(j), i, j));
 			}
 		}
@@ -56,11 +56,17 @@ public class Builder {
 	public int match(String target) {
 		for (int i = 0; i < TEMPLATE.size(); i++) {
 			JSONObject properties = (JSONObject) TEMPLATE.get(i).get("properties");
+			Object[] propKeys = properties.keySet().toArray();
 			Object[] propVals = properties.values().toArray();
 			for (int j = 0; j < propVals.length; j++) {
-				if (propVals[j].toString().equalsIgnoreCase(target)) {
+				System.out.println(target + "--" + propVals[j]);
+				if (target.toLowerCase().contains(propVals[j].toString().toLowerCase())) {
 					return i;
 				}
+//				if (propVals[j].toString().equalsIgnoreCase(target)) {
+//					return i;
+//				}
+				
 			}
 		}
 		return -1;

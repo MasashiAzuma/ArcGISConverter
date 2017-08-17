@@ -27,6 +27,5 @@ public class MyProgressBar {
 
 	public void kill() {
 		progressBar.setString("Completed");
-		
 	}
 }

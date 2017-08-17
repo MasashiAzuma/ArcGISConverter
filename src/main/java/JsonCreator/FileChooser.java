@@ -34,13 +34,11 @@ public class FileChooser {
 
 		chooser = new JFileChooser();
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Acceptable Files", "csv", "txt"));
-		//chooser.setCurrentDirectory(new File("/Users/SerARK/Desktop/Patrick Data"));
-		chooser.setCurrentDirectory(new File("/Users/azum288/Desktop"));
+		chooser.setCurrentDirectory(new File("/Users/SerARK/Desktop/Patrick Data"));
+		// chooser.setCurrentDirectory(new File("/Users/azum288/Desktop"));
 		chooser.setDialogTitle(choosertitle);
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		chooser.setAcceptAllFileFilterUsed(false);
-		
-		
 
 		if (chooser.showOpenDialog(c) == JFileChooser.APPROVE_OPTION) {
 			System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
@@ -85,44 +83,78 @@ public class FileChooser {
 			String line = reader.readLine();
 			line = filter(line, "\"");
 
-			String[] split = line.split(DELIMITER, -1);
-			for(int i = 0 ; i < split.length; i++) {
-				split[i] = split[i].toLowerCase();
-			}
-			String[] headers = new String[split.length + 1];
-			headers[0] = "None";
-			for (int i = 0; i < split.length; i++) {
-				headers[i + 1] = split[i].toLowerCase();
-			}
+			if (!file.getName().equals("wellAttributes_clean_lonlat.csv")) {
+				String[] initSplit = line.split(DELIMITER, -1);
+				String[] headers = new String[initSplit.length + 2];
+				String[] split = new String[initSplit.length + 1];
 
-			for (int i = 0; i < headers.length; i++) {
-				headers[i] = headers[i].trim();
-			}
-			for (int i = 0; i < split.length; i++) {
-				split[i] = split[i].trim();
-			}
-			allData.add(split);
+				headers[0] = "None";
+				headers[1] = "file name";
+				for (int i = 0; i < initSplit.length; i++) {
+					headers[i + 2] = initSplit[i].toLowerCase().trim();
+				}
+				for (int i = 0; i < split.length; i++) {
+					split[i] = headers[i + 1].toLowerCase().trim();
+				}
+				allData.add(split);
+			} else {
+				String[] split = line.split(DELIMITER, -1);
+				for (int i = 0; i < split.length; i++) {
+					split[i] = split[i].toLowerCase();
+				}
+				String[] headers = new String[split.length + 1];
+				headers[0] = "None";
+				for (int i = 0; i < split.length; i++) {
+					headers[i + 1] = split[i].toLowerCase();
+				}
 
+				for (int i = 0; i < headers.length; i++) {
+					headers[i] = headers[i].trim();
+				}
+				for (int i = 0; i < split.length; i++) {
+					split[i] = split[i].trim();
+				}
+				allData.add(split);
+			}
 			for (line = reader.readLine(); line != null; line = reader.readLine()) {
 				String lineCheck = filter(line, DELIMITER);
 
-				if (lineCheck.trim().length() > 0) { // skip blank lines
-					String tokens[] = line.split("\\,", -1);
-					for (int i = 0; i < tokens.length; i++) {
-						if (tokens[i].trim().toString().equalsIgnoreCase("")) {
-							tokens[i] = "";
-						} else {
-							tokens[i] = this.filter(tokens[i].trim(), "\"");
+				if (!file.getName().equals("wellAttributes_clean_lonlat.csv")) {
+					if (lineCheck.trim().length() > 0) { // skip blank lines
+						String initTokens[] = line.split("\\,", -1);
+						String tokens[] = new String[initTokens.length+1];
+						tokens[0] = this.filter(file.getName(), "_3var.csv");
+						for(int i = 0; i < initTokens.length; i++){
+							tokens[i+1] = initTokens[i];
 						}
+						for (int i = 0; i < tokens.length; i++) {
+							if (tokens[i].trim().toString().equalsIgnoreCase("")) {
+								tokens[i] = "";
+							} else {
+								tokens[i] = this.filter(tokens[i].trim(), "\"");
+							}
+						}
+						allData.add(tokens);
 					}
-					allData.add(tokens);
+				} else {
+					if (lineCheck.trim().length() > 0) { // skip blank lines
+						String tokens[] = line.split("\\,", -1);
+						for (int i = 0; i < tokens.length; i++) {
+							if (tokens[i].trim().toString().equalsIgnoreCase("")) {
+								tokens[i] = "";
+							} else {
+								tokens[i] = this.filter(tokens[i].trim(), "\"");
+							}
+						}
+						allData.add(tokens);
+					}
 				}
 			}
 		}
 
 		DATA.add(allData);
 	}
-	
+
 	public String getFileName(int num) {
 		return directory[num].getName();
 	}
@@ -160,7 +192,7 @@ public class FileChooser {
 	public int getNumFiles() {
 		return directory.length;
 	}
-	
+
 	public String getSelectedFileName() {
 		return chooser.getSelectedFile().getName();
 	}
@@ -172,7 +204,7 @@ public class FileChooser {
 	public String getDirectoryPath() {
 		return chooser.getCurrentDirectory().getPath().toString();
 	}
-	
+
 	public ArrayList<String[]> getAllHeaders() {
 		ArrayList<String[]> allHeaders = new ArrayList<String[]>();
 		for (int i = 0; i < DATA.size(); i++) {

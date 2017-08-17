@@ -123,7 +123,8 @@ public class FileChooser {
 					if (lineCheck.trim().length() > 0) { // skip blank lines
 						String initTokens[] = line.split("\\,", -1);
 						String tokens[] = new String[initTokens.length+1];
-						tokens[0] = this.filter(file.getName(), "_3var.csv");
+						tokens[0] = file.getName().replace("_3var.csv", "");
+						//tokens[0] = this.filter(file.getName(), "_3var.csv");
 						for(int i = 0; i < initTokens.length; i++){
 							tokens[i+1] = initTokens[i];
 						}

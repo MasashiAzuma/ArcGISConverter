@@ -65,12 +65,12 @@ public class Builder {
 			Object[] propKeys = properties.keySet().toArray();
 			Object[] propVals = properties.values().toArray();
 			for (int j = 0; j < propVals.length; j++) {
-				if (target.toLowerCase().contains(propVals[j].toString().toLowerCase())) {
-					return i;
-				}
-//				if (propVals[j].toString().equalsIgnoreCase(target)) {
+//				if (target.toLowerCase().contains(propVals[j].toString().toLowerCase())) {
 //					return i;
 //				}
+				if (propVals[j].toString().equalsIgnoreCase(target)) {
+					return i;
+				}
 				
 			}
 		}

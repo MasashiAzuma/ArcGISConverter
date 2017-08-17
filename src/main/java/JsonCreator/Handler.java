@@ -140,7 +140,7 @@ public class Handler {
 		if (allFileFormat) {
 			for (int i = 0; i < jsonCreator.length; i++) {
 				Selector.myProgressBar.update();
-				Selector.label.setText("File Processing: " + i + "/" + (jsonCreator.length-1) + " - " + fc.getFileName(i));
+				Selector.label.setText("File Processing: " + (i+1) + "/" + (jsonCreator.length) + " - " + fc.getFileName(i));
 				Selector.displayTime("file process -  " + fc.getFileName(i) + " " + i + "/" + (jsonCreator.length-1));
 				jsonCreator[i] = new Json();
 				ArrayList<JSONObject> temp = jsonCreator[i].getJson(AllGUI[0], DATA.get(i));

@@ -16,7 +16,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
-public class PropertyKey extends JPanel implements JsonGUI{
+public class PropertyKey extends JPanel implements JsonGUI {
 	private JComboBox<String> propertyKey;
 	private JComboBox<String> propertyType;
 
@@ -60,30 +60,16 @@ public class PropertyKey extends JPanel implements JsonGUI{
 	}
 
 	@Override
-	public void testing() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void deleteCB() {
 		propertyKey.removeAllItems();
 
 	}
 
 	@Override
-	public JSONObject pullJson(ArrayList<String[]> allData, int row) {
-		JSONObject prop = new JSONObject();
-		
-		//System.out.println(row);
-		//System.out.println(allData.get(row).length + "row length");
-		
-		for (int i = 0; i < allData.get(row).length; i++) {
-			//System.out.println(i);
-			if ((allData.get(0).length>i)&&propertyKey.getSelectedItem().equals(allData.get(0)[i])) {
-				prop.put(propertyKey.getSelectedItem(), allData.get(row)[i]);
-			}
-		}
-		return prop;
+	public String[] pullHeaders() {
+		String[] propertyHeader = new String[1];
+		propertyHeader[0] = propertyKey.getSelectedItem().toString();
+		return propertyHeader;
 	}
+
 }

@@ -112,37 +112,17 @@ public class Geometry extends JPanel implements JsonGUI {
 	}
 
 	@Override
-	public void testing() {
-		System.out.println("Geometry test");
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void deleteCB() {
 		latCB.removeAllItems();
 		lonCB.removeAllItems();
 	}
 
 	@Override
-	public JSONObject pullJson(ArrayList<String[]> allData, int row) {
-		JSONObject geo = new JSONObject();
-		geo.put("type", GeoCB.getSelectedItem());
-
-		JSONArray cor = new JSONArray();
-		for (int i = 0; i < allData.get(0).length; i++) {
-			if (latCB.getSelectedItem().equals(allData.get(0)[i])) {
-				cor.add(allData.get(row)[i]);
-			}
-			if (lonCB.getSelectedItem().equals(allData.get(0)[i])) {
-				cor.add(allData.get(row)[i]);
-			}
-		}
-		geo.put("coordinates", cor);
-		
-		JSONObject geometry = new JSONObject();
-		geometry.put("geometry", geo);
-
-		return geometry;
+	public String[] pullHeaders() {
+		String[] geometryHeaders = new String[2];
+		geometryHeaders[0] = lonCB.getSelectedItem().toString();
+		geometryHeaders[1] = latCB.getSelectedItem().toString();
+		return geometryHeaders;
 	}
+
 }

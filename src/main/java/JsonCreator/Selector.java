@@ -28,14 +28,12 @@ public class Selector extends JFrame {
 	public static long startTime;
 	public static long lapTime;
 	public static MyProgressBar myProgressBar;
-	
+
 	private JPanel contentPane;
 	private String[] headers;
 	private ArrayList<String[]> allData;
 	private ArrayList<JsonGUI> allUI;
 	private JProgressBar progressBar;
-	
-	
 
 	/**
 	 * Launch the application.
@@ -53,10 +51,10 @@ public class Selector extends JFrame {
 			}
 		});
 	}
-	
+
 	public static void displayTime(String thing) {
 		Selector.lapTime = System.nanoTime();
-		System.out.println((lapTime - startTime)/1000000000 + " sec: " + thing);
+		System.out.println((lapTime - startTime) / 1000000000 + " sec: " + thing);
 	}
 
 	public Selector() {
@@ -85,7 +83,7 @@ public class Selector extends JFrame {
 		FileChooser fc = new FileChooser(c);
 		Handler hd = new Handler(tabbedPane, fc);
 
-		JLabel lblFiles = new JLabel("Files");
+		JLabel lblFiles = new JLabel("Key");
 		GridBagConstraints gbc_lblFiles = new GridBagConstraints();
 		gbc_lblFiles.insets = new Insets(0, 0, 5, 5);
 		gbc_lblFiles.anchor = GridBagConstraints.EAST;
@@ -123,7 +121,7 @@ public class Selector extends JFrame {
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 4;
 		contentPane.add(label, gbc_label);
-		
+
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridwidth = 3;
@@ -133,11 +131,11 @@ public class Selector extends JFrame {
 		gbc_panel.gridy = 5;
 		contentPane.add(panel, gbc_panel);
 		panel.setLayout(new BorderLayout(0, 0));
-		
+
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		panel.add(progressBar);
-		
+
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
 		log.setEditable(false);
@@ -150,61 +148,34 @@ public class Selector extends JFrame {
 		contentPane.add(scrollPane, gbc_scrollPane);
 
 		btnAddFile.addActionListener((ActionEvent e) -> {
-			fc.reset();
 			fc.openFile();
-			hd.makeTabs(true);
-			hd.insertHeaders(true);
-			hd.insertTabs();
 
 			comboBox.setModel(new DefaultComboBoxModel(fc.getFile()));
+			hd.insertHeaders();
 
 		});
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
-				myProgressBar = new MyProgressBar(progressBar);
-				Thread progress = new Thread(()->myProgressBar.start());
-				progress.start();
-				
-				Thread converter = new Thread(()->hd.getJson(true));
-				converter.start();
-				
+
+			Selector.startTime = System.nanoTime();
+			Thread converter = new Thread(() -> hd.createJSON(comboBox.getSelectedItem().toString()));
+
+			converter.start();
+
+			// myProgressBar = new MyProgressBar(progressBar);
+			// Thread progress = new Thread(()->myProgressBar.start());
+			// progress.start();
+			//
+			// Thread converter = new Thread(()->hd.getJson(true));
+			// converter.start();
+
 		});
-		
+
 		comboBox.addItemListener((ItemEvent e) -> {
-			hd.select(comboBox.getSelectedIndex());
+
 			contentPane.validate();
 			contentPane.repaint();
 		});
 
 	}
 }
-//class MyProgressBar extends JDialog{
-//	private static final long serialVersionUID = 1L;
-//	private static Optional<MyProgressBar> mpb = Optional.empty();
-//	public static void gen(JFrame jf) {
-//		if(!mpb.isPresent()) {
-//			mpb=Optional.of(new MyProgressBar(jf));						
-//		}					
-//	}
-//	MyProgressBar(JFrame jf){
-//		super(jf, true);
-//		make();
-//	}
-//	private void make() {
-//		JProgressBar progressBar = new JProgressBar(0, 100);
-//        progressBar.setValue(0);
-//        progressBar.setStringPainted(true);
-//		
-//	}
-//	public void update(UpdateContext ux) {
-//		//update code
-//		if(ux.isKill) {
-//			end();
-//		}
-//	}
-//	private void end() {
-//		mpb=Optional.empty();
-//		this.dispose();
-//	}
-//	
-//}

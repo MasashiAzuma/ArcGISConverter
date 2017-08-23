@@ -9,8 +9,6 @@ public interface JsonGUI{
 	
 	abstract public void deleteCB();
 	
-	abstract public void testing();
-	
-	abstract public JSONObject pullJson(ArrayList<String[]> allData, int row);
+	abstract public String[] pullHeaders();
 	
 }

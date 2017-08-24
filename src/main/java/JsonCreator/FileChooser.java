@@ -44,8 +44,9 @@ public class FileChooser {
 			chooser.setCurrentDirectory(new File(chooser.getCurrentDirectory().toString()));
 			System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
 			if (chooser.getSelectedFile().isFile()) {
-				directory = new File[1];
+				directory = new File[2];
 				directory[0] = chooser.getSelectedFile();
+				directory[1] = chooser.getSelectedFile();
 			} else if (chooser.getSelectedFile().isDirectory()) {
 				directory = chooser.getSelectedFile().listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
@@ -54,8 +55,6 @@ public class FileChooser {
 						return false;
 					}
 				});
-				for (int i = 0; i < directory.length; i++) {
-				}
 			}
 		} else {
 			System.out.println("No Selection ");

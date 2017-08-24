@@ -1,6 +1,7 @@
 package JsonCreator;
 
 import java.awt.Component;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +9,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -66,32 +69,85 @@ public class Handler {
 	}
 
 	public void createJSON(String keyFileName) {
+		Selector.myProgressBar.setMax(fc.getNumFiles());
+
 		JSONObject keyJson = processKey(keyFileName);
+		Selector.myProgressBar.update();
 		File[] directory = fc.getAllBut(keyFileName);
-		JSONArray features = new JSONArray();
+		File r = new File(fc.getDirectoryPath());
 		for (int i = 0; i < directory.length; i++) {
+			File f = new File(r, String.valueOf(i));
+			JSONArray features = new JSONArray();
 			this.processData(directory[i], keyJson, features);
+			Selector.myProgressBar.update();
+			try (FileWriter file = new FileWriter(f)) {
+				f.deleteOnExit();
+				features.writeJSONString(file);
+				// Selector.log.append(fc.getSelectedFileName() + ".json File created
+				// successfully" + "\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Selector.displayTime(directory[i].getName());
+			}
+		}
+		System.out.println("Stitching:START");
+		File out = new File(r, fc.getSelectedFileName() + ".json");
+		try {
+			FileWriter fw = new FileWriter(out, false);
+			fw.write("{\"features\":[");
+			boolean flag = false;
+			for (int i = 0; i < directory.length; i++) {
+				File f = new File(r, String.valueOf(i));
+				System.out.println("Stitching:" + i);
+				char[] a = new char[1];
+				try (FileReader fr = new FileReader(f)) {
+					if (-1 != fr.read(a)) {
+						if (flag) {
+							fw.write(',');
+						} else {
+							flag = true;
+						}
+						fr.read(a);
+						char[] b = new char[1024];
+						int q = fr.read(b);
+						while (-1 != q) {
+							fw.write(a);
+							fw.write(b, 0, q - 1);
+							a[0] = b[q - 1];
+							q = fr.read(b);
+						}
+						fw.flush();
+					}
+
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			fw.write("],\"type\":\"FeatureCollection\"}");
+			fw.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
-		JSONObject finalObj = new JSONObject();
-		finalObj.put("features", features);
-		finalObj.put("type", "FeatureCollection");
-
+		// merge()
 		Selector.displayTime("Done creating Features");
-
-		this.write(finalObj);
-		// need to read in directory files given keyJSON (you also have headersIndexes
-		// to consider)
+		Selector.log.append(fc.getSelectedFileName() + ".json File created successfully" + "\n");
+		Selector.myProgressBar.kill();
 
 	}
 
 	public void processData(File file, JSONObject keyJson, JSONArray features) {
-		System.out.println(file.getName());
 		JSONArray coordinates = this.fileNameCheck(file, keyJson);
 		boolean matchedName = false;
-		if (coordinates != null)
+		if (coordinates != null) {
 			matchedName = true;
-		System.out.println(matchedName);
+		}
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String firstLine = reader.readLine();
@@ -128,12 +184,19 @@ public class Handler {
 								coordinates = targGeo;
 						}
 					}
+					// matchedName = true;
+
 				}
+				// ls[0]+=System.nanoTime()-l;
+				// l=System.nanoTime();
 				geometry.put("type", "Point");
 				geometry.put("coordinates", coordinates);
 
+				// ls[1]+=System.nanoTime()-l;
+				// l=System.nanoTime();
 				// process the properties (super easy haha)
-				for (int i = 0; i < split.length; i++) {
+
+				for (int i = 0; i < header.length; i++) {
 					property.put(header[i], split[i]);
 				}
 
@@ -141,7 +204,6 @@ public class Handler {
 				feature.put("properties", property);
 				feature.put("type", "Feature");
 				features.add(feature);
-
 			}
 
 		} catch (FileNotFoundException e) {

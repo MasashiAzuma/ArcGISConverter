@@ -157,17 +157,14 @@ public class Selector extends JFrame {
 
 		btnSubmit.addActionListener((ActionEvent e) -> {
 
+			myProgressBar = new MyProgressBar(progressBar);
+			Thread progress = new Thread(() -> myProgressBar.start());
+			progress.start();
+
 			Selector.startTime = System.nanoTime();
 			Thread converter = new Thread(() -> hd.createJSON(comboBox.getSelectedItem().toString()));
 
 			converter.start();
-
-			// myProgressBar = new MyProgressBar(progressBar);
-			// Thread progress = new Thread(()->myProgressBar.start());
-			// progress.start();
-			//
-			// Thread converter = new Thread(()->hd.getJson(true));
-			// converter.start();
 
 		});
 
